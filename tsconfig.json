@@ -1,3 +1,4 @@
 {
     "extends": "@tsconfig/svelte/tsconfig.json",
+    "typings": "index.d.ts"
 }

@@ -2,11 +2,6 @@
     'use strict';
 
     function noop() { }
-    function add_location(element, file, line, column, char) {
-        element.__svelte_meta = {
-            loc: { file, line, column, char }
-        };
-    }
     function run(fn) {
         return fn();
     }
@@ -25,14 +20,8 @@
     function is_empty(obj) {
         return Object.keys(obj).length === 0;
     }
-    function insert(target, node, anchor) {
-        target.insertBefore(node, anchor || null);
-    }
     function detach(node) {
         node.parentNode.removeChild(node);
-    }
-    function element(name) {
-        return document.createElement(name);
     }
     function children(element) {
         return Array.from(element.childNodes);
@@ -46,34 +35,6 @@
     let current_component;
     function set_current_component(component) {
         current_component = component;
-    }
-    function get_current_component() {
-        if (!current_component)
-            throw new Error('Function called outside component initialization');
-        return current_component;
-    }
-    /**
-     * The `onMount` function schedules a callback to run as soon as the component has been mounted to the DOM.
-     * It must be called during the component's initialisation (but doesn't need to live *inside* the component;
-     * it can be called from an external module).
-     *
-     * `onMount` does not run inside a [server-side component](/docs#run-time-server-side-component-api).
-     *
-     * https://svelte.dev/docs#run-time-svelte-onmount
-     */
-    function onMount(fn) {
-        get_current_component().$$.on_mount.push(fn);
-    }
-    /**
-     * Schedules a callback to run immediately before the component is unmounted.
-     *
-     * Out of `onMount`, `beforeUpdate`, `afterUpdate` and `onDestroy`, this is the
-     * only one that runs inside a server-side component.
-     *
-     * https://svelte.dev/docs#run-time-svelte-ondestroy
-     */
-    function onDestroy(fn) {
-        get_current_component().$$.on_destroy.push(fn);
     }
 
     const dirty_components = [];
@@ -299,14 +260,6 @@
     function dispatch_dev(type, detail) {
         document.dispatchEvent(custom_event(type, Object.assign({ version: '3.51.0' }, detail), { bubbles: true }));
     }
-    function insert_dev(target, node, anchor) {
-        dispatch_dev('SvelteDOMInsert', { target, node, anchor });
-        insert(target, node, anchor);
-    }
-    function detach_dev(node) {
-        dispatch_dev('SvelteDOMRemove', { node });
-        detach(node);
-    }
     function validate_slots(name, slot, keys) {
         for (const slot_key of Object.keys(slot)) {
             if (!~keys.indexOf(slot_key)) {
@@ -334,113 +287,19 @@
         $inject_state() { }
     }
 
-    class Player {
-        constructor(canvas) {
-            this.xv = 0;
-            this.yv = 0;
-            this.x = 0;
-            this.y = 0;
-            this.keys = new Map();
-            canvas.addEventListener("mousemove", ev => this.mousemove(ev));
-            canvas.addEventListener("mousedown", ev => this.mousedown(ev));
-            canvas.addEventListener("mouseup", ev => this.mouseup(ev));
-            canvas.addEventListener("contextmenu", ev => this.contextmenu(ev));
-            window.addEventListener("keydown", ev => this.keydown(ev));
-            window.addEventListener("keyup", ev => this.keyup(ev));
-        }
-        tick(dT) {
-            this.xv += this.keys.get("KeyA") ? 0.05 : 0 * dT;
-            this.xv -= this.keys.get("KeyD") ? 0.05 : 0 * dT;
-            this.yv += this.keys.get("KeyW") ? 0.05 : 0 * dT;
-            this.yv -= this.keys.get("KeyS") ? 0.05 : 0 * dT;
-            this.xv = this.xv >= 0 ? Math.min(this.xv, 1) : Math.max(this.xv, -1);
-            this.yv = this.yv >= 0 ? Math.min(this.yv, 1) : Math.max(this.yv, -1);
-            this.xv /= 1.2;
-            this.yv /= 1.2;
-            this.x += this.xv * dT;
-            this.y += this.yv * dT;
-        }
-        mousemove(ev) {
-            // if (this._mouseButton == 1 || this._mouseButton == 0 && this._altKey) {
-            //     this._dragX += ev.movementX;
-            //     this._dragY += ev.movementY;
-            // }
-            // this._mouseX = ev.x;
-            // this._mouseY = ev.y - 50;
-        }
-        mousedown(ev) {
-            // this._mouseButton = ev.button;
-        }
-        mouseup(_ev) {
-            // this._mouseButton = -1;
-        }
-        contextmenu(ev) {
-            ev.preventDefault();
-        }
-        keydown(ev) {
-            // this.altKey = ev.altKey;
-            // this.ctrlKey = ev.ctrlKey;
-            // this.shiftKey = ev.shiftKey;
-            this.keys.set(ev.code, true);
-        }
-        keyup(ev) {
-            // this.altKey = ev.altKey;
-            // this.ctrlKey = ev.ctrlKey;
-            // this.shiftKey = ev.shiftKey;
-            this.keys.delete(ev.code);
-        }
-    }
-
-    const images = new Map([
-        ["bg_image", new Image(1028, 1028)],
-        ["rumpkin", new Image(64, 64)]
-    ]);
-    images.get("bg_image").src = "media/ground.png";
-    images.get("rumpkin").src = "media/rumpkin.png";
-    let loaded_count = 0;
-    let on_load = () => { };
-    function image_load() {
-        console.log("start wait...");
-        return new Promise((resolve, reject) => {
-            on_load = resolve;
-        });
-    }
-    function load() {
-        loaded_count++;
-        console.log(loaded_count, images.size);
-        if (loaded_count == images.size) {
-            console.log("loaded");
-            on_load();
-        }
-    }
-    images.forEach((image) => image.onload = load);
-
     /* src\App.svelte generated by Svelte v3.51.0 */
-    const file = "src\\App.svelte";
 
     function create_fragment(ctx) {
-    	let canvas_1;
-
     	const block = {
-    		c: function create() {
-    			canvas_1 = element("canvas");
-    			canvas_1.textContent = "Loading...";
-    			add_location(canvas_1, file, 45, 0, 1363);
-    		},
+    		c: noop,
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, canvas_1, anchor);
-    			/*canvas_1_binding*/ ctx[1](canvas_1);
-    		},
+    		m: noop,
     		p: noop,
     		i: noop,
     		o: noop,
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(canvas_1);
-    			/*canvas_1_binding*/ ctx[1](null);
-    		}
+    		d: noop
     	};
 
     	dispatch_dev("SvelteRegisterBlock", {
@@ -454,51 +313,98 @@
     	return block;
     }
 
+    function gameUpdatePost() {
+    	
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    function gameRenderPost() {
+    	
+    }
+
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('App', slots, []);
-    	let canvas;
-    	let animation_frame;
-    	let tick_timeout;
 
-    	onMount(async () => {
-    		await image_load();
-    		$$invalidate(0, canvas.innerText = "", canvas);
-    		const ctx = canvas.getContext("2d");
-    		const player = new Player(canvas);
+    	// popup errors if there are any (help diagnose issues on mobile devices)
+    	onerror = (...parameters) => alert(parameters);
 
-    		function resize() {
-    			$$invalidate(0, canvas.width = window.innerWidth, canvas);
-    			$$invalidate(0, canvas.height = window.innerHeight, canvas);
-    			render();
+    	let player;
+
+    	///////////////////////////////////////////////////////////////////////////////
+    	function gameInit() {
+    		// create tile collision and visible tile layer
+    		initTileCollision(vec2(48, 24));
+
+    		const tileLayer = new TileLayer(vec2(), tileCollisionSize);
+    		vec2();
+
+    		mainContext.drawImage(tileImage, 0, 0);
+
+    		// setTileCollisionData(pos, 1);
+    		const mirror = randInt(2);
+
+    		for (let x = 0; x < tileCollisionSize.x; x++) {
+    			for (let y = 0; y < tileCollisionSize.y; y++) {
+    				const data = new TileLayerData(Math.max(randInt(25) - 21, 0), 0, Boolean(mirror));
+    				tileLayer.setData(vec2(x, y), data);
+    			}
     		}
 
-    		window.addEventListener("resize", resize);
-    		resize();
-    		let last_tick = Date.now();
+    		tileLayer.redraw();
 
-    		function tick() {
-    			const now = Date.now();
-    			const dT = now - last_tick;
-    			player.tick(dT);
-    			last_tick = now;
+    		// move camera to center of collision
+    		cameraPos = tileCollisionSize.scale(.5);
+
+    		cameraScale = 32;
+    		player = new EngineObject(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2), vec2(1, 1), 10, vec2(16, 16));
+    	} // enable gravity
+    	// gravity = -.01;
+
+    	// create particle emitter
+    	// const center = tileCollisionSize.scale(.5).add(vec2(0,9));
+    	// particleEmiter = new ParticleEmitter(
+    	//     center, 0, 1, 0, 500, PI, // pos, angle, emitSize, emitTime, emitRate, emiteCone
+    	//     0, vec2(16),                            // tileIndex, tileSize
+    	//     new Color(1,1,1),   new Color(0,0,0),   // colorStartA, colorStartB
+    	//     new Color(1,1,1,0), new Color(0,0,0,0), // colorEndA, colorEndB
+    	//     2, .2, .2, .1, .05,     // particleTime, sizeStart, sizeEnd, particleSpeed, particleAngleSpeed
+    	//     .99, 1, 1, PI, .05,     // damping, angleDamping, gravityScale, particleCone, fadeRate, 
+    	//     .5, true, true                // randomness, collide, additive, randomColorLinear, renderOrder
+    	// );
+    	// particleEmiter.elasticity = .3; // bounce when it collides
+    	// particleEmiter.trailScale = 2;  // stretch in direction of motion
+    	///////////////////////////////////////////////////////////////////////////////
+    	function gameUpdate() {
+    		const moveInput = isUsingGamepad
+    		? gamepadStick(0)
+    		: vec2(Number(keyIsDown(39)) - Number(keyIsDown(37)), Number(keyIsDown(38)) - Number(keyIsDown(40)));
+
+    		player.pos.x += moveInput.x / 10;
+    		player.pos.y += moveInput.y / 10;
+    	}
+
+    	///////////////////////////////////////////////////////////////////////////////
+    	let animation_frame = 0;
+
+    	let player_frame = 0;
+
+    	function gameRender() {
+    		// draw a grey square in the background without using webgl
+    		// drawRect(cameraPos, tileCollisionSize.add(vec2(5)), new Color(.2,.2,.2), 0, false);
+    		if (animation_frame % 30 == 0) {
+    			player_frame++;
+    			if (player_frame > 2) player_frame = 0;
     		}
 
-    		function render() {
-    			const ptrn = ctx.createPattern(images.get("bg_image"), 'repeat');
-    			ptrn.setTransform({ e: player.x % 1028, f: player.y % 1028 });
-    			ctx.fillStyle = ptrn;
-    			ctx.fillRect(0, 0, canvas.width, canvas.height);
-    			ctx.drawImage(images.get("rumpkin"), canvas.width / 2 - 32, canvas.height / 2 - 32);
-    			animation_frame = requestAnimationFrame(render);
-    		}
-    		setInterval(tick, 50);
-    	});
+    		player.tileIndex = 8 + player_frame;
+    		player.update();
+    		animation_frame++;
+    	}
 
-    	onDestroy(() => {
-    		cancelAnimationFrame(animation_frame);
-    		clearTimeout(tick_timeout);
-    	});
+    	///////////////////////////////////////////////////////////////////////////////
+    	// Startup LittleJS Engine
+    	engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, 'media/tiles.png');
 
     	const writable_props = [];
 
@@ -506,35 +412,28 @@
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<App> was created with unknown prop '${key}'`);
     	});
 
-    	function canvas_1_binding($$value) {
-    		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
-    			canvas = $$value;
-    			$$invalidate(0, canvas);
-    		});
-    	}
-
     	$$self.$capture_state = () => ({
-    		onDestroy,
-    		onMount,
-    		Player,
-    		images,
-    		image_load,
-    		canvas,
+    		player,
+    		gameInit,
+    		gameUpdate,
+    		gameUpdatePost,
     		animation_frame,
-    		tick_timeout
+    		player_frame,
+    		gameRender,
+    		gameRenderPost
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ('canvas' in $$props) $$invalidate(0, canvas = $$props.canvas);
+    		if ('player' in $$props) player = $$props.player;
     		if ('animation_frame' in $$props) animation_frame = $$props.animation_frame;
-    		if ('tick_timeout' in $$props) tick_timeout = $$props.tick_timeout;
+    		if ('player_frame' in $$props) player_frame = $$props.player_frame;
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [canvas, canvas_1_binding];
+    	return [];
     }
 
     class App extends SvelteComponentDev {

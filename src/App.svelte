@@ -9,6 +9,7 @@
     onerror = (...parameters)=> alert(parameters);
 
     let player: EngineObject;
+    let weapon: EngineObject;
 
     ///////////////////////////////////////////////////////////////////////////////
     function gameInit()
@@ -26,7 +27,7 @@
         const mirror = randInt(2);
         for(let x = 0; x < tileCollisionSize.x; x++) {
             for(let y = 0; y < tileCollisionSize.y; y++) {
-                const data = new TileLayerData(Math.max(randInt(25) - 21, 0), 0, Boolean(mirror));
+                const data = new TileLayerData(Math.max(randInt(30) - 26, 0), 0, Boolean(mirror));
                 tileLayer.setData(vec2(x, y), data);
             }
         }
@@ -36,7 +37,14 @@
         cameraPos = tileCollisionSize.scale(.5);
         cameraScale = 32;
 
-        player = new EngineObject(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2), vec2(1, 1), 10, vec2(16, 16));
+        player = new EngineObject(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2), vec2(1, 1), 8, vec2(16, 16));
+        weapon = new EngineObject(vec2(0, 0), vec2(1, 1), 11, vec2(16, 16), 90);
+
+        player.addChild(
+            weapon,
+            vec2(.4, .1),
+            0
+        );
 
         // enable gravity
         // gravity = -.01;
@@ -57,14 +65,41 @@
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    let last_input = vec2();
+
+    const bullets: EngineObject[] = []
+
+    let shoot_cooldown = 0;
     function gameUpdate()
     {
         const moveInput = isUsingGamepad ? gamepadStick(0) : 
             vec2(Number(keyIsDown(39)) - Number(keyIsDown(37)), Number(keyIsDown(38)) - Number(keyIsDown(40)));
 
-        player.pos.x += moveInput.x / 10;
-        player.pos.y += moveInput.y / 10;
+        player.velocity = moveInput.divide(vec2(20, 20));
+        
+        if (shoot_cooldown == 0 && mouseIsDown(0)) {
+            const bullet = new EngineObject(player.children[0].pos, vec2(1, 1), 12, vec2(16, 16), player.children[0].localAngle);
+            bullets.push(bullet);
 
+            // if (bullet.angle > )
+
+            bullet.velocity = vec2(Math.cos(bullet.angle), Math.sin(2*PI - bullet.angle)).normalize().divide(vec2(3, 3));
+            bullet.damping = 1;
+
+            shoot_cooldown++;
+        }
+
+        bullets.forEach(v => {
+            // v.velocity =
+        })
+
+        if (shoot_cooldown > 0)
+            shoot_cooldown++;
+        
+        if (shoot_cooldown >= 5)
+            shoot_cooldown = 0;
+
+        last_input = moveInput;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -90,6 +125,13 @@
 
         player.tileIndex = 8 + player_frame;
 
+        player.children[0].localAngle =
+            Math.atan2(
+                mousePos.x - player.children[0].pos.x,
+                mousePos.y - player.children[0].pos.y
+            ) - 90 * PI / 180;
+
+        player.children[0].update();
         player.update();
 
         animation_frame++;

@@ -406,7 +406,7 @@
     		}); // v.velocity =
 
     		if (shoot_cooldown > 0) shoot_cooldown++;
-    		if (shoot_cooldown >= 5) shoot_cooldown = 0;
+    		if (shoot_cooldown >= 7) shoot_cooldown = 0;
     		last_input = moveInput;
     	}
 

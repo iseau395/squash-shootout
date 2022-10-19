@@ -37,36 +37,22 @@
         cameraPos = tileCollisionSize.scale(.5);
         cameraScale = 32;
 
+        const store = new EngineObject(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2 + 2), vec2(2, 2), 3, vec2(32, 32));
+        store.setCollision(false, true, false);
+
         player = new EngineObject(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2), vec2(1, 1), 8, vec2(16, 16));
+        player.setCollision(true, false, true);
         weapon = new EngineObject(vec2(0, 0), vec2(1, 1), 11, vec2(16, 16), 90);
 
         player.addChild(
             weapon,
-            vec2(.4, .1),
+            vec2(.6, .2),
             0
         );
 
-        // enable gravity
-        // gravity = -.01;
-
-        // create particle emitter
-        // const center = tileCollisionSize.scale(.5).add(vec2(0,9));
-        // particleEmiter = new ParticleEmitter(
-        //     center, 0, 1, 0, 500, PI, // pos, angle, emitSize, emitTime, emitRate, emiteCone
-        //     0, vec2(16),                            // tileIndex, tileSize
-        //     new Color(1,1,1),   new Color(0,0,0),   // colorStartA, colorStartB
-        //     new Color(1,1,1,0), new Color(0,0,0,0), // colorEndA, colorEndB
-        //     2, .2, .2, .1, .05,     // particleTime, sizeStart, sizeEnd, particleSpeed, particleAngleSpeed
-        //     .99, 1, 1, PI, .05,     // damping, angleDamping, gravityScale, particleCone, fadeRate, 
-        //     .5, true, true                // randomness, collide, additive, randomColorLinear, renderOrder
-        // );
-        // particleEmiter.elasticity = .3; // bounce when it collides
-        // particleEmiter.trailScale = 2;  // stretch in direction of motion
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    let last_input = vec2();
-
     const bullets: EngineObject[] = []
 
     let shoot_cooldown = 0;
@@ -76,30 +62,32 @@
             vec2(Number(keyIsDown(39)) - Number(keyIsDown(37)), Number(keyIsDown(38)) - Number(keyIsDown(40)));
 
         player.velocity = moveInput.divide(vec2(20, 20));
+        console.log(moveInput);
         
         if (shoot_cooldown == 0 && mouseIsDown(0)) {
-            const bullet = new EngineObject(player.children[0].pos, vec2(1, 1), 12, vec2(16, 16), player.children[0].localAngle);
+            const bullet = new EngineObject(
+                player.children[0].pos.add(
+                    vec2()
+                    .setAngle(player.children[0].localAngle + .5 * PI)
+                    .divide(vec2(2.2, 2.2))),
+                vec2(1, 1),
+                12, vec2(16, 16),
+                player.children[0].localAngle
+            );
             bullets.push(bullet);
 
-            // if (bullet.angle > )
 
-            bullet.velocity = vec2(Math.cos(bullet.angle), Math.sin(2*PI - bullet.angle)).normalize().divide(vec2(3, 3));
+            bullet.velocity = vec2().setAngle(bullet.angle + .5 * PI).normalize().divide(vec2(3, 3));
             bullet.damping = 1;
 
             shoot_cooldown++;
         }
 
-        bullets.forEach(v => {
-            // v.velocity =
-        })
-
         if (shoot_cooldown > 0)
             shoot_cooldown++;
         
-        if (shoot_cooldown >= 7)
+        if (shoot_cooldown >= 8)
             shoot_cooldown = 0;
-
-        last_input = moveInput;
     }
 
     ///////////////////////////////////////////////////////////////////////////////

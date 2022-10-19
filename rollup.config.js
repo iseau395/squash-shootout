@@ -39,7 +39,7 @@ const config = {
         sourcemap: !production,
         format: 'iife',
         name: 'app',
-        file: `public/build.js`
+        file: `public/build/build.js`
     },
     inlineDynamicImports: true,
     plugins: [
@@ -56,7 +56,7 @@ const config = {
             }),
             compilerOptions: {
                 dev: !production,
-                filename: `public/build.js`
+                filename: `public/build/build.js`
             }
         }),
         css({ output: `build.css` }),

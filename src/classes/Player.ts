@@ -27,7 +27,12 @@ export class Player extends EngineObject {
         super.update(); // update object physics and position
         
         const moveInput = isUsingGamepad ? gamepadStick(0) : 
-            vec2(Number(keyIsDown(39)) - Number(keyIsDown(37)), Number(keyIsDown(38)) - Number(keyIsDown(40)));
+            vec2(
+                (this.pos.x < tileCollisionSize.x - 1.5 ? Number(keyIsDown(39)) : 0) -
+                (this.pos.x > 1.5 ? Number(keyIsDown(37)) : 0),
+                (this.pos.y < tileCollisionSize.y - 1.5 ? Number(keyIsDown(38)) : 0) -
+                (this.pos.y > 1.5 ? Number(keyIsDown(40)) : 0)
+            );
 
         this.velocity = moveInput.divide(vec2(15, 15));
 

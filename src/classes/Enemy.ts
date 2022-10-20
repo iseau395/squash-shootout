@@ -61,7 +61,7 @@ export class Enemy extends EngineObject {
             if (this.pos.x == this.too_close_to.x && this.pos.y == this.too_close_to.y)
                 this.velocity = randVector(1);
             else
-                this.velocity = this.pos.subtract(this.too_close_to).normalize().divide(vec2(30, 30));
+                this.velocity = this.pos.subtract(this.too_close_to).normalize().divide(vec2(50, 50));
         }
         else if (this.pos.distance(player.pos) > 2) {
             this.velocity = this.pos.subtract(player.pos).normalize().divide(vec2(-30, -30));
@@ -69,6 +69,12 @@ export class Enemy extends EngineObject {
         else {
             this.velocity = vec2(0, 0);
         }
+
+        this.velocity = 
+            vec2(
+                (this.pos.x < tileCollisionSize.x - 1.5 && this.pos.x > 1.5 ? this.velocity.x : Math.abs(this.velocity.x) * -Math.sign(this.pos.x - tileCollisionSize.x/2)),
+                (this.pos.y < tileCollisionSize.y - 1.5 && this.pos.y > 1.5 ? this.velocity.y : Math.abs(this.velocity.y) * -Math.sign(this.pos.y - tileCollisionSize.y/2))
+            );
     }
 
     render()

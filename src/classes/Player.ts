@@ -1,72 +1,56 @@
-export class Player {
-    private xv = 0;
-    private yv = 0;
+/// <reference path="../index.d.ts"/>
+import type { Child } from "../util";
+import { Weapon } from "./Weapon";
 
-    x = 0;
-    y = 0;
+export class Player extends EngineObject {
+    private weapon_id = 0;
+    // private readonly weapon = new EngineObject(vec2(0, 0), vec2(1, 1), 17 + this.weapon_id, vec2(16, 16), 90) as Child;
+    private readonly weapon = new Weapon(this.weapon_id, 8) as Weapon & Child;
 
-    private keys = new Map<string, boolean>();
+    private animation_frame = 0;
+    private sprite_frame = 0;
 
-    constructor(canvas: HTMLCanvasElement) {
-        canvas.addEventListener("mousemove", ev => this.mousemove(ev));
-        canvas.addEventListener("mousedown", ev => this.mousedown(ev));
-        canvas.addEventListener("mouseup", ev => this.mouseup(ev));
-        canvas.addEventListener("contextmenu", ev => this.contextmenu(ev));
-        window.addEventListener("keydown", ev => this.keydown(ev));
-        window.addEventListener("keyup", ev => this.keyup(ev));
+    constructor(pos: Vector2)
+    {
+        super(pos, vec2(1, 1), 8, vec2(16, 16));
+
+        this.addChild(
+            this.weapon,
+            vec2(.6, .2),
+            0
+        );
+        // your object init code here
     }
 
-    tick(dT: number) {
-        this.xv += this.keys.get("KeyA") ? 0.05 : 0 * dT;
-        this.xv -= this.keys.get("KeyD") ? 0.05 : 0 * dT;
-        this.yv += this.keys.get("KeyW") ? 0.05 : 0 * dT;
-        this.yv -= this.keys.get("KeyS") ? 0.05 : 0 * dT;
+    update()
+    {
+        super.update(); // update object physics and position
+        
+        const moveInput = isUsingGamepad ? gamepadStick(0) : 
+            vec2(Number(keyIsDown(39)) - Number(keyIsDown(37)), Number(keyIsDown(38)) - Number(keyIsDown(40)));
 
-        this.xv = this.xv >= 0 ? Math.min(this.xv, 1) : Math.max(this.xv, -1);
-        this.yv = this.yv >= 0 ? Math.min(this.yv, 1) : Math.max(this.yv, -1);
-
-        this.xv /= 1.2;
-        this.yv /= 1.2;
-
-        this.x += this.xv * dT;
-        this.y += this.yv * dT;
-    }
-    
-    private mousemove(ev: MouseEvent) {
-        // if (this._mouseButton == 1 || this._mouseButton == 0 && this._altKey) {
-        //     this._dragX += ev.movementX;
-        //     this._dragY += ev.movementY;
-        // }
-
-        // this._mouseX = ev.x;
-        // this._mouseY = ev.y - 50;
-    }
-    
-    private mousedown(ev: MouseEvent) {
-        // this._mouseButton = ev.button;
-    }
-    
-    private mouseup(_ev: MouseEvent) {
-        // this._mouseButton = -1;
+        this.velocity = moveInput.divide(vec2(20, 20));
     }
 
-    private contextmenu(ev: MouseEvent) {
-        ev.preventDefault();
-    }
+    render()
+    {
+        super.render(); // draw object as a sprite
+        
+        if (this.animation_frame % 25 == 0) {
+            this.sprite_frame++;
 
-    private keydown(ev: KeyboardEvent) {
-        // this.altKey = ev.altKey;
-        // this.ctrlKey = ev.ctrlKey;
-        // this.shiftKey = ev.shiftKey;
+            if (this.sprite_frame > 2)
+                this.sprite_frame = 0;
+        }
 
-        this.keys.set(ev.code, true);
-    }
+        this.animation_frame++;
 
-    private keyup(ev: KeyboardEvent) {
-        // this.altKey = ev.altKey;
-        // this.ctrlKey = ev.ctrlKey;
-        // this.shiftKey = ev.shiftKey;
+        this.tileIndex = 8 + this.sprite_frame;
 
-        this.keys.delete(ev.code);
+        this.weapon.localAngle =
+            Math.atan2(
+                mousePos.x - this.weapon.pos.x,
+                mousePos.y - this.weapon.pos.y
+            ) - 90 * PI / 180;
     }
 }

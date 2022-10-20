@@ -1,11 +1,8 @@
 /// <reference path="../index.d.ts"/>
-import type { Child } from "../util";
-import { Weapon } from "./Weapon";
+import { Gun } from "./Weapon";
 
 export class Player extends EngineObject {
-    private weapon_id = 0;
-    // private readonly weapon = new EngineObject(vec2(0, 0), vec2(1, 1), 17 + this.weapon_id, vec2(16, 16), 90) as Child;
-    private readonly weapon = new Weapon(this.weapon_id, 8) as Weapon & Child;
+    private weapon = new Gun();
 
     private animation_frame = 0;
     private sprite_frame = 0;
@@ -46,11 +43,5 @@ export class Player extends EngineObject {
         this.animation_frame++;
 
         this.tileIndex = 8 + this.sprite_frame;
-
-        this.weapon.localAngle =
-            Math.atan2(
-                mousePos.x - this.weapon.pos.x,
-                mousePos.y - this.weapon.pos.y
-            ) - 90 * PI / 180;
     }
 }

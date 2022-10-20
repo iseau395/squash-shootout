@@ -33,27 +33,49 @@ export class Weapon extends EngineObject implements Child {
             this.shoot_counter = 0;
         
         if (this.shoot_counter == 0 && mouseIsDown(0)) {
-            const bullet = new EngineObject(
-                this.pos.add(
-                    vec2()
-                    .setAngle(this.localAngle + .5 * PI)
-                    .divide(vec2(2.2, 2.2))),
-                vec2(1, 1),
-                24 + this.sprite_index, vec2(16, 16),
-                this.localAngle
-            );
-            this.bullets.push(bullet);
-
-
-            bullet.velocity = vec2().setAngle(bullet.angle + .5 * PI).normalize().divide(vec2(3, 3));
-            bullet.damping = 1;
+            this.bullets.push(this.shoot());
 
             this.shoot_counter++;
         }
     }
 
+    shoot(): EngineObject {
+        console.error("Unimplimented");
+        return;
+    }
+
     render()
     {
         super.render(); // draw object as a sprite
+
+        this.localAngle =
+            Math.atan2(
+                mousePos.x - this.pos.x,
+                mousePos.y - this.pos.y
+            ) - 90 * PI / 180;
+    }
+}
+
+export class Gun extends Weapon {
+    constructor() {
+        super(0, 8);
+    }
+
+    shoot(): EngineObject {
+        const bullet = new EngineObject(
+            this.pos.add(
+                vec2()
+                .setAngle(this.localAngle + .5 * PI)
+                .divide(vec2(2.2, 2.2))),
+            vec2(1, 1),
+            24 + this.sprite_index, vec2(16, 16),
+            this.localAngle
+        );
+
+
+        bullet.velocity = vec2().setAngle(bullet.angle + .5 * PI).normalize().divide(vec2(3, 3));
+        bullet.damping = 1;
+
+        return bullet;
     }
 }

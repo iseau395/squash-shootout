@@ -996,7 +996,7 @@ declare const isProduction: boolean;
  /** Tile sheet for batch rendering system
   *  @type {Image}
   *  @memberof Draw */
- declare const tileImage: new (width?: number, height?: number) => HTMLImageElement;
+ declare const tileImage: HTMLImageElement;
  /** The primary 2D canvas visible to the user
   *  @type {HTMLCanvasElement}
   *  @memberof Draw */

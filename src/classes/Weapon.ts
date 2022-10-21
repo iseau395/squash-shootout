@@ -48,7 +48,7 @@ export class Weapon extends EngineObject implements Child {
 
 export class Gun extends Weapon {
     constructor() {
-        super(0, 8);
+        super(0, 16);
     }
 
     shoot(): EngineObject {

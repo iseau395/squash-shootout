@@ -36,7 +36,7 @@ export class Enemy extends EngineObject {
     {
         super.update(); // update object physics and position
 
-        this.last_targets[4] = this.last_targets.shift().lerp(player.pos.add(randVector(.5)), .09);
+        this.last_targets[4] = this.last_targets.shift().lerp(player.pos.add(randVector(2)), .09);
 
         this.weapon.setTarget(this.last_targets[4]);
 
@@ -46,7 +46,7 @@ export class Enemy extends EngineObject {
         if (this.shoot_counter >= this.weapon.shoot_cooldown)
             this.shoot_counter = 0;
         
-        if (this.shoot_counter == 0 && this.pos.distance(player.pos) < 8) {
+        if (this.shoot_counter == 0 && this.pos.distance(player.pos) < 8 && enemy_bullets.length < 400) {
             enemy_bullets.push(this.weapon.shoot());
 
             this.shoot_counter++;

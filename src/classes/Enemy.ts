@@ -7,10 +7,12 @@ export class Enemy extends EngineObject {
 
     private animation_frame = 0;
     private sprite_frame = 0;
+    private sprite;
 
     constructor(pos: Vector2, sprite: number)
     {
         super(pos, vec2(1, 1), 16 + 8*sprite, vec2(16, 16));
+        this.sprite = sprite;
 
         this.addChild(
             this.weapon,
@@ -27,21 +29,16 @@ export class Enemy extends EngineObject {
         this.too_close_to = pos;
     }
 
-    readonly last_targets: Vector2[] = [vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0)]
+    readonly last_targets: Vector2[] = [vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0)];
+    readonly last_move: Vector2[] = [vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0)];
     shoot_counter = 0;
     update()
     {
         super.update(); // update object physics and position
 
-        const last_target = this.last_targets[0];
+        this.last_targets[4] = this.last_targets.shift().lerp(player.pos.add(randVector(.5)), .09);
 
-        this.last_targets[0] = this.last_targets[1];
-        this.last_targets[1] = this.last_targets[2];
-        this.last_targets[2] = this.last_targets[3];
-        this.last_targets[3] = this.last_targets[4];
-        this.last_targets[4] = last_target.lerp(player.pos, .09);
-
-        this.weapon.setTarget(last_target);
+        this.weapon.setTarget(this.last_targets[4]);
 
         if (this.shoot_counter > 0)
             this.shoot_counter++;
@@ -49,7 +46,7 @@ export class Enemy extends EngineObject {
         if (this.shoot_counter >= this.weapon.shoot_cooldown)
             this.shoot_counter = 0;
         
-        if (this.shoot_counter == 0 && this.pos.distance(player.pos) < 5) {
+        if (this.shoot_counter == 0 && this.pos.distance(player.pos) < 8) {
             enemy_bullets.push(this.weapon.shoot());
 
             this.shoot_counter++;
@@ -63,17 +60,19 @@ export class Enemy extends EngineObject {
             else
                 this.velocity = this.pos.subtract(this.too_close_to).normalize().divide(vec2(50, 50));
         }
-        else if (this.pos.distance(player.pos) > 2) {
-            this.velocity = this.pos.subtract(player.pos).normalize().divide(vec2(-30, -30));
+        else if (this.pos.distance(player.pos) > 5) {
+            this.velocity = this.pos.subtract(player.pos.add(randVector(2))).normalize().divide(vec2(-30, -30));
         }
         else {
             this.velocity = vec2(0, 0);
         }
 
+        this.last_move[4] = this.last_move.shift().lerp(this.velocity, .2);
+
         this.velocity = 
             vec2(
-                (this.pos.x < tileCollisionSize.x - 1.5 && this.pos.x > 1.5 ? this.velocity.x : Math.abs(this.velocity.x) * -Math.sign(this.pos.x - tileCollisionSize.x/2)),
-                (this.pos.y < tileCollisionSize.y - 1.5 && this.pos.y > 1.5 ? this.velocity.y : Math.abs(this.velocity.y) * -Math.sign(this.pos.y - tileCollisionSize.y/2))
+                (this.pos.x < tileCollisionSize.x - 1.5 && this.pos.x > 1.5 ? this.last_move[4].x : Math.abs(this.last_move[4].x) * -Math.sign(this.pos.x - tileCollisionSize.x/2)),
+                (this.pos.y < tileCollisionSize.y - 1.5 && this.pos.y > 1.5 ? this.last_move[4].y : Math.abs(this.last_move[4].y) * -Math.sign(this.pos.y - tileCollisionSize.y/2))
             );
     }
 
@@ -90,6 +89,6 @@ export class Enemy extends EngineObject {
 
         // this.animation_frame++;
 
-        this.tileIndex = 16 + this.sprite_frame;
+        this.tileIndex = 16 + this.sprite_frame + 8 * this.sprite;
     }
 }

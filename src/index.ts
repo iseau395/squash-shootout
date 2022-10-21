@@ -44,8 +44,11 @@ function gameInit()
     const store = new EngineObject(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2 + 2), vec2(2, 2), 3, vec2(32, 32));
     store.setCollision(false, true, false);
 
+    // for (let i = 0; i < 30; i++) {
+    //     enemies.push(new Enemy(vec2(tileCollisionSize.x / 2 + randInt(0, 30) - 15, tileCollisionSize.y / 2 + randInt(0, 30) - 15), 0));
+    // }
     for (let i = 0; i < 30; i++) {
-        enemies.push(new Enemy(vec2(tileCollisionSize.x / 2 + randInt(0, 10) - 5, tileCollisionSize.y / 2 + randInt(0, 10) - 5), 0));
+        enemies.push(new Enemy(vec2(tileCollisionSize.x * rand(0, 1), tileCollisionSize.y * rand(0, 1)), 0));
     }
 
     player = new Player(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2));

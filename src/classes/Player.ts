@@ -51,7 +51,7 @@ export class Player extends EngineObject {
         }
 
         this.bullets.forEach(v => {
-            if (time - v.spawnTime > .75 && !v.destroyed)
+            if (time - v.spawnTime > .5 && !v.destroyed)
                 v.destroy();
         });
     }

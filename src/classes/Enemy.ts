@@ -1,9 +1,10 @@
 /// <reference path="../index.d.ts"/>
 import { Gun } from "./Weapon";
 import { player, enemy_bullets } from "..";
+import { Entity } from "./Entity";
 
-export class Enemy extends EngineObject {
-    private weapon = new Gun();
+export class Enemy extends Entity {
+    protected weapon = new Gun();
 
     private animation_frame = 0;
     private sprite_frame = 0;
@@ -11,7 +12,7 @@ export class Enemy extends EngineObject {
 
     constructor(pos: Vector2, sprite: number)
     {
-        super(pos, vec2(1, 1), 16 + 8*sprite, vec2(16, 16));
+        super(pos, 5);
         this.sprite = sprite;
 
         this.addChild(
@@ -36,6 +37,9 @@ export class Enemy extends EngineObject {
     {
         super.update(); // update object physics and position
 
+        if (this.destroyed)
+            return;
+
         this.last_targets[4] = this.last_targets.shift().lerp(player.pos.add(randVector(.5)), .09);
 
         this.weapon.setTarget(this.last_targets[4]);
@@ -43,7 +47,7 @@ export class Enemy extends EngineObject {
         if (this.shoot_counter > 0)
             this.shoot_counter++;
 
-        if (this.shoot_counter >= this.weapon.shoot_cooldown)
+        if (this.shoot_counter >= this.weapon.shoot_cooldown * 2)
             this.shoot_counter = 0;
         
         if (this.shoot_counter == 0 && this.pos.distance(player.pos) < 8) {
@@ -51,8 +55,6 @@ export class Enemy extends EngineObject {
 
             this.shoot_counter++;
         }
-        
-        console.log(this.is_too_close);
 
         if (this.is_too_close) {
             if (this.pos.x == this.too_close_to.x && this.pos.y == this.too_close_to.y)

@@ -1,24 +1,24 @@
 /// <reference path="../index.d.ts"/>
+import { Entity } from "./Entity";
 import { Gun } from "./Weapon";
 
-export class Player extends EngineObject {
-    private weapon = new Gun();
+export class Player extends Entity {
+    protected weapon = new Gun();
 
     private animation_frame = 0;
     private sprite_frame = 0;
 
-    private readonly bullets: EngineObject[] = [];
+    readonly bullets: EngineObject[] = [];
 
     constructor(pos: Vector2)
     {
-        super(pos, vec2(1, 1), 8, vec2(16, 16));
+        super(pos, 100);
 
         this.addChild(
             this.weapon,
             vec2(.6, .2),
             0
         );
-        // your object init code here
     }
 
     private shoot_counter = 0;

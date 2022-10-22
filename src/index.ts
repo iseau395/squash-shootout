@@ -58,16 +58,22 @@ function gameInit()
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate()
 {
-    enemy_bullets.forEach((v, i) => {
-        if (time - v.spawnTime > .5 && !v.destroyed) {
-            v.destroy();
+    enemy_bullets.forEach((b, i) => {
+        if (time - b.spawnTime > .5 && !b.destroyed) {
+            b.destroy();
             enemy_bullets.splice(i, 1);
+            return;
+        }
+
+        if (Math.abs(b.pos.x - player.pos.x) < .4 && Math.abs(b.pos.y - player.pos.y) < .4) {
+            player.damage(1);
+            b.destroy();
+            enemy_bullets.splice(i, 1);
+            return;
         }
     });
 
-    console.log(enemies.length);
-
-    for (const enemy of enemies) {
+    enemies.forEach((enemy, e_i) => {
         let closest_distance = 1;
         let closest = vec2();
 
@@ -83,9 +89,22 @@ function gameUpdate()
             enemy.isTooClose(true, closest);
         else 
             enemy.isTooClose(false, closest);
-    };
 
-    enemies.forEach(e => e.update());
+        player.bullets.forEach((b, i) => {
+            if (b.destroyed)
+                return;
+
+            if (Math.abs(b.pos.x - enemy.pos.x) < .5 && Math.abs(b.pos.y - enemy.pos.y) < .5) {
+                enemy.damage(1);
+                b.destroy();
+                player.bullets.splice(i, 1);
+            }
+        });
+
+        if (enemy.destroyed) {
+            enemies.splice(e_i, 1);
+        }
+    });
 }
 
 ///////////////////////////////////////////////////////////////////////////////

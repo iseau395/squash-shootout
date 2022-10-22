@@ -33,6 +33,8 @@ export class Weapon extends EngineObject implements Child {
                 this.target.x - this.pos.x,
                 this.target.y - this.pos.y
             ) - 90 * PI / 180;
+
+        console.log(this.pos);
     }
 
     shoot(): EngineObject {

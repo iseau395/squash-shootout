@@ -3,7 +3,7 @@
 import { Weapon } from "./Weapon";
 
 export class Entity extends EngineObject {
-    protected weapon = new Weapon(0, 8);
+    protected weapon;
 
     health: number
 

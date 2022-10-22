@@ -12,7 +12,7 @@ export class Enemy extends Entity {
 
     constructor(pos: Vector2, sprite: number)
     {
-        super(pos, 5);
+        super(pos, 2);
         this.sprite = sprite;
 
         this.addChild(

@@ -1,11 +1,3 @@
-// // @ts-ignore
-// import App from './App.svelte';
-
-// new App({
-//     target: document.body
-// });
-
-
 import { Enemy } from "./classes/Enemy";
 import { Player } from "./classes/Player";
 
@@ -47,7 +39,7 @@ function gameInit()
     // for (let i = 0; i < 30; i++) {
     //     enemies.push(new Enemy(vec2(tileCollisionSize.x / 2 + randInt(0, 30) - 15, tileCollisionSize.y / 2 + randInt(0, 30) - 15), 0));
     // }
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 50; i++) {
         enemies.push(new Enemy(vec2(tileCollisionSize.x * rand(0, 1), tileCollisionSize.y * rand(0, 1)), 0));
     }
 

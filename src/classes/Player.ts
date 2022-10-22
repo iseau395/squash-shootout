@@ -34,7 +34,10 @@ export class Player extends Entity {
                 (this.pos.y > 1.5 ? Number(keyIsDown(40)) : 0)
             );
 
-        this.velocity = moveInput.divide(vec2(15, 15));
+        if (moveInput.distance(vec2(0, 0)) != 0)
+            this.velocity = moveInput.normalize().divide(vec2(13, 13));
+        else 
+            this.velocity = vec2(0, 0);
 
         this.weapon.setTarget(mousePos);
 

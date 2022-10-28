@@ -28,10 +28,10 @@ export class Player extends Entity {
         
         const moveInput = isUsingGamepad ? gamepadStick(0) : 
             vec2(
-                (this.pos.x < tileCollisionSize.x - 1.5 ? Number(keyIsDown(39)) : 0) -
-                (this.pos.x > 1.5 ? Number(keyIsDown(37)) : 0),
-                (this.pos.y < tileCollisionSize.y - 1.5 ? Number(keyIsDown(38)) : 0) -
-                (this.pos.y > 1.5 ? Number(keyIsDown(40)) : 0)
+                (this.pos.x < tileCollisionSize.x / 2 + 24 - 1 ? Number(keyIsDown(39)) : 0) -
+                (this.pos.x > 24 + 1 ? Number(keyIsDown(37)) : 0),
+                (this.pos.y < tileCollisionSize.y / 2 + 12 - 1 ? Number(keyIsDown(38)) : 0) -
+                (this.pos.y > 12 + 1.75 ? Number(keyIsDown(40)) : 0)
             );
 
         if (moveInput.distance(vec2(0, 0)) != 0)

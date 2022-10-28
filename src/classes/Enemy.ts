@@ -73,8 +73,8 @@ export class Enemy extends Entity {
 
         this.velocity = 
             vec2(
-                (this.pos.x < tileCollisionSize.x - 1.5 && this.pos.x > 1.5 ? this.last_move[4].x : Math.abs(this.last_move[4].x) * -Math.sign(this.pos.x - tileCollisionSize.x/2)),
-                (this.pos.y < tileCollisionSize.y - 1.5 && this.pos.y > 1.5 ? this.last_move[4].y : Math.abs(this.last_move[4].y) * -Math.sign(this.pos.y - tileCollisionSize.y/2))
+                (this.pos.x < tileCollisionSize.x / 2 + 24 - 1 && this.pos.x > 24 + 1 ? this.last_move[4].x : Math.abs(this.last_move[4].x) * -Math.sign(this.pos.x - tileCollisionSize.x/2)),
+                (this.pos.y < tileCollisionSize.y / 2 + 12 - 1 && this.pos.y > 12 + 1.75 ? this.last_move[4].y : Math.abs(this.last_move[4].y) * -Math.sign(this.pos.y - tileCollisionSize.y/2))
             );
     }
 

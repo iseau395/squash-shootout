@@ -10,41 +10,61 @@ export const enemy_bullets: EngineObject[] = [];
 const enemies: Enemy[] = [];
 
 ///////////////////////////////////////////////////////////////////////////////
+function setTile(tileLayer: TileLayer, pos: Vector2, tileIndex: number) {
+    const position = pos.multiply(vec2(2, 2));
+
+    tileLayer.setData(position.add(vec2(0, 0)), new TileLayerData(tileIndex * 2 + 32, 0));
+    tileLayer.setData(position.add(vec2(1, 0)), new TileLayerData(tileIndex * 2 + 33, 0));
+    tileLayer.setData(position.add(vec2(0, 1)), new TileLayerData(tileIndex * 2 + 0, 0));
+    tileLayer.setData(position.add(vec2(1, 1)), new TileLayerData(tileIndex * 2 + 1, 0));
+}
+
 function gameInit()
 {
     // create tile collision and visible tile layer
-    initTileCollision(vec2(48, 24));
+    initTileCollision(vec2(48 * 2, 24 * 2));
     const tileLayer = new TileLayer(vec2(), tileCollisionSize);
 
     // get level data from the tiles image
     mainContext.drawImage(tileImage, 0, 0);
-    // setTileCollisionData(pos, 1);
 
-    const mirror = randInt(2);
-    for(let x = 0; x < tileCollisionSize.x; x++) {
-        for(let y = 0; y < tileCollisionSize.y; y++) {
-            const data = new TileLayerData(Math.max(randInt(30) - 26, 0), 0, Boolean(mirror));
-            tileLayer.setData(vec2(x, y), data);
+    for(let x = 0; x < tileCollisionSize.x / 2 - 2; x++) {
+        setTile(tileLayer, vec2(1 + x, 0), 38);
+        setTile(tileLayer, vec2(1 + x, tileCollisionSize.y / 2 - 1), 38);
+
+        for(let y = 0; y < tileCollisionSize.y / 2 - 2; y++) {
+            const tile = randInt(6);
+
+            setTile(tileLayer, vec2(1 + x, 1 + y), 64 + tile);
         }
     }
-    tileLayer.redraw();
-
-    // move camera to center of collision
-    cameraPos = tileCollisionSize.scale(.5);
-    cameraScale = 32;
-
-    const store = new EngineObject(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2 + 2), vec2(2, 2), 3, vec2(32, 32));
-    store.setCollision(false, true, false);
-
-    // for (let i = 0; i < 30; i++) {
-    //     enemies.push(new Enemy(vec2(tileCollisionSize.x / 2 + randInt(0, 30) - 15, tileCollisionSize.y / 2 + randInt(0, 30) - 15), 0));
-    // }
-    for (let i = 0; i < 50; i++) {
-        enemies.push(new Enemy(vec2(tileCollisionSize.x * rand(0, 1), tileCollisionSize.y * rand(0, 1)), 0));
+    
+    for(let y = 0; y < tileCollisionSize.y / 2 - 2; y++) {
+        setTile(tileLayer, vec2(0, 1 + y), 36);
+        setTile(tileLayer, vec2(tileCollisionSize.y - 1, 1 + y), 37);
     }
 
-    player = new Player(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2));
+    setTile(tileLayer, vec2(0, 0), 32);
+    setTile(tileLayer, vec2(0, tileCollisionSize.y / 2 - 1), 33);
+    setTile(tileLayer, vec2(tileCollisionSize.x / 2 - 1, 0), 34);
+    setTile(tileLayer, vec2(tileCollisionSize.x / 2 - 1, tileCollisionSize.y / 2 - 1), 35);
 
+    tileLayer.scale = vec2(.5, .5);
+    tileLayer.redraw();
+    tileLayer.pos = vec2(48 / 2, 24 / 2);
+
+    // move camera to center of collision
+    cameraScale = 64;
+
+    for (let i = 0; i < 30; i++) {
+        enemies.push(new Enemy(vec2(tileCollisionSize.x / 2 + randInt(0, 30) - 15, tileCollisionSize.y / 2 + randInt(0, 30) - 15), 0));
+    }
+    // for (let i = 0; i < 50; i++) {
+    //     enemies.push(new Enemy(vec2(tileCollisionSize.x * rand(0, 1), tileCollisionSize.y * rand(0, 1)), 0));
+    // }
+    
+
+    player = new Player(vec2(tileCollisionSize.x / 2, tileCollisionSize.y / 2));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,9 +126,11 @@ function gameUpdatePost()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+const last_camera = [vec2(), vec2(), vec2()];
 function gameRender()
 {
-    drawText(`Health: ${player.health}`, vec2(.25, tileCollisionSize.y - .75), 1, new Color(0, 0, 0, 1), 100, new Color(0, 0, 0, 0), "left");
+    last_camera[2] = last_camera.shift().lerp(player.pos.subtract(player.velocity.multiply(vec2(5, 5))), .1);
+    cameraPos = last_camera[2];
 }
 
 ///////////////////////////////////////////////////////////////////////////////

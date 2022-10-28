@@ -12,11 +12,11 @@ export class Player extends Entity {
 
     constructor(pos: Vector2)
     {
-        super(pos, 100);
+        super(pos, 100, vec2(1, 1.5), vec2(32, 48));
 
         this.addChild(
             this.weapon,
-            vec2(.6, .2),
+            vec2(1, .5),
             0
         );
     }
@@ -46,7 +46,7 @@ export class Player extends Entity {
 
         if (this.shoot_counter >= this.weapon.shoot_cooldown)
             this.shoot_counter = 0;
-        
+
         if (this.shoot_counter == 0 && mouseIsDown(0)) {
             this.bullets.push(this.weapon.shoot());
 
@@ -72,6 +72,6 @@ export class Player extends Entity {
 
         this.animation_frame++;
 
-        this.tileIndex = 8 + this.sprite_frame;
+        this.tileIndex = 32 + this.sprite_frame;
     }
 }

@@ -10,9 +10,11 @@ export class Weapon extends EngineObject implements Child {
     protected sprite_index: number;
     shoot_cooldown: number;
 
+    protected bullet_spawn = vec2(0, 0)
+
     constructor(id: number, cooldown: number)
     {
-        super(vec2(0, 0), vec2(1, 1), 48 + id, vec2(16, 16), 90);
+        super(vec2(0, 0), vec2(1.5, 1), 7 + id, vec2(48, 32), 90);
 
         this.sprite_index = id;
 
@@ -33,8 +35,6 @@ export class Weapon extends EngineObject implements Child {
                 this.target.x - this.pos.x,
                 this.target.y - this.pos.y
             ) - 90 * PI / 180;
-
-        console.log(this.pos);
     }
 
     shoot(): EngineObject {
@@ -55,12 +55,9 @@ export class Gun extends Weapon {
 
     shoot(): EngineObject {
         const bullet = new EngineObject(
-            this.pos.add(
-                vec2()
-                .setAngle(this.localAngle + .5 * PI)
-                .divide(vec2(2.2, 2.2))),
-            vec2(1, 1),
-            56 + this.sprite_index, vec2(16, 16),
+            this.pos.add(vec2(.5, .25).rotate(-this.localAngle)),
+            vec2(.5, .5),
+            0 + this.sprite_index, vec2(16, 16),
             this.localAngle
         );
 

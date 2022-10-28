@@ -12,15 +12,15 @@ export class Enemy extends Entity {
 
     constructor(pos: Vector2, sprite: number)
     {
-        super(pos, 2);
+        super(pos, 2, vec2(1, 1.5), vec2(32, 48));
         this.sprite = sprite;
+        this.tileIndex = 0;
 
         this.addChild(
             this.weapon,
             vec2(.6, .2),
             0
         );
-        // your object init code here
     }
 
     is_too_close = false;
@@ -40,7 +40,7 @@ export class Enemy extends Entity {
         if (this.destroyed)
             return;
 
-        this.last_targets[4] = this.last_targets.shift().lerp(player.pos.add(randVector(2)), .09);
+        this.last_targets[4] = this.last_targets.shift().lerp(player.pos.add(randVector(.5)), .09);
 
         this.weapon.setTarget(this.last_targets[4]);
 
@@ -81,7 +81,7 @@ export class Enemy extends Entity {
     render()
     {
         super.render(); // draw object as a sprite
-        
+
         // if (this.animation_frame % 25 == 0) {
         //     this.sprite_frame++;
 
@@ -91,6 +91,6 @@ export class Enemy extends Entity {
 
         // this.animation_frame++;
 
-        this.tileIndex = 16 + this.sprite_frame + 8 * this.sprite;
+        this.tileIndex = 80  + this.sprite_frame + 16 * this.sprite;
     }
 }

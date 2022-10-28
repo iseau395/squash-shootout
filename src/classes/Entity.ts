@@ -7,9 +7,9 @@ export class Entity extends EngineObject {
 
     health: number
 
-    constructor(pos: Vector2,  health: number)
+    constructor(pos: Vector2,  health: number, size: Vector2, tileSize: Vector2)
     {
-        super(pos, vec2(1, 1), 0, vec2(16, 16));
+        super(pos, size, 0, tileSize);
         this.health = health;
     }
 

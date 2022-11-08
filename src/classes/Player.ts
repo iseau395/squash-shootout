@@ -12,7 +12,7 @@ export class Player extends Entity {
 
     constructor(pos: Vector2)
     {
-        super(pos, 100, vec2(1, 1.5), vec2(32, 48));
+        super(pos, 20, vec2(1, 1.5), vec2(32, 48));
 
         this.addChild(
             this.weapon,
@@ -25,7 +25,7 @@ export class Player extends Entity {
     update()
     {
         super.update(); // update object physics and position
-        
+
         const moveInput = isUsingGamepad ? gamepadStick(0) : 
             vec2(
                 (this.pos.x < tileCollisionSize.x / 2 + 24 - 1 ? Number(keyIsDown(39)) : 0) -

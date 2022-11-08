@@ -23,16 +23,16 @@ export class Enemy extends Entity {
         );
     }
 
-    is_too_close = false;
-    too_close_to = vec2();
+    private is_too_close = false;
+    private too_close_to = vec2();
     isTooClose(too_close: boolean, pos: Vector2) {
         this.is_too_close = too_close;
         this.too_close_to = pos;
     }
 
-    readonly last_targets: Vector2[] = [vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0)];
-    readonly last_move: Vector2[] = [vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0), vec2(0, 0)];
-    shoot_counter = 0;
+    private last_target = randVector(10).add(this.pos);
+    private last_move = vec2(0, 0);
+    private shoot_counter = 0;
     update()
     {
         super.update(); // update object physics and position
@@ -42,14 +42,14 @@ export class Enemy extends Entity {
 
         const pos_diff = player.pos.subtract(this.pos);
 
-        this.last_targets[4] = this.last_targets.shift().lerp(
+        this.last_target = this.last_target.lerp(
             player.pos.add(randVector(1).multiply(
                 vec2(max(min(pos_diff.x / 10, 2), .5), max(min(pos_diff.y / 10, 2), .5))
             )),
-            .09
+            .02
         );
 
-        this.weapon.setTarget(this.last_targets[4]);
+        this.weapon.setTarget(this.last_target);
 
         if (this.shoot_counter > 0)
             this.shoot_counter++;
@@ -76,12 +76,12 @@ export class Enemy extends Entity {
             this.velocity = vec2(0, 0);
         }
 
-        this.last_move[4] = this.last_move.shift().lerp(this.velocity, .2);
+        this.last_move = this.last_move.lerp(this.velocity, .25);
 
         this.velocity = 
             vec2(
-                (this.pos.x < tileCollisionSize.x / 2 + 24 - 1 && this.pos.x > 24 + 1 ? this.last_move[4].x : Math.abs(this.last_move[4].x) * -Math.sign(this.pos.x - tileCollisionSize.x/2)),
-                (this.pos.y < tileCollisionSize.y / 2 + 12 - 1 && this.pos.y > 12 + 1.75 ? this.last_move[4].y : Math.abs(this.last_move[4].y) * -Math.sign(this.pos.y - tileCollisionSize.y/2))
+                (this.pos.x < tileCollisionSize.x / 2 + 24 - 1 && this.pos.x > 24 + 1 ? this.last_move.x : Math.abs(this.last_move.x) * -Math.sign(this.pos.x - tileCollisionSize.x/2)),
+                (this.pos.y < tileCollisionSize.y / 2 + 12 - 1 && this.pos.y > 12 + 1.75 ? this.last_move.y : Math.abs(this.last_move.y) * -Math.sign(this.pos.y - tileCollisionSize.y/2))
             );
     }
 

@@ -1,4 +1,4 @@
-/// <reference types="svelte" />
+///esfsfr <reference types="svelte" />
 declare const isProduction: boolean;
 
 /** Draw textured tile centered in world space, with color applied if using WebGL

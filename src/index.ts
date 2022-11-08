@@ -68,6 +68,9 @@ function gameInit()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+let tick = 0;
+let kills = 0;
+
 function gameUpdate()
 {
     enemy_bullets.forEach((b, i) => {
@@ -84,6 +87,9 @@ function gameUpdate()
             return;
         }
     });
+
+    if (player.destroyed)
+        paused = 1;
 
     enemies.forEach((enemy, e_i) => {
         let closest_distance = 1;
@@ -114,9 +120,15 @@ function gameUpdate()
         });
 
         if (enemy.destroyed) {
+            kills++;
             enemies.splice(e_i, 1);
         }
     });
+
+    if (tick % 20 == 0 && enemies.length < 50)
+        enemies.push(new Enemy(vec2(tileCollisionSize.x / 2 + randInt(0, 30) - 15, tileCollisionSize.y / 2 + randInt(0, 30) - 15), 0));
+
+    tick++;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,11 +138,22 @@ function gameUpdatePost()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-const last_camera = [vec2(), vec2(), vec2()];
+let last_camera = vec2(NaN, NaN);
 function gameRender()
 {
-    last_camera[2] = last_camera.shift().lerp(player.pos.subtract(player.velocity.multiply(vec2(5, 5))), .1);
-    cameraPos = last_camera[2];
+    if (isNaN(last_camera.x) && isNaN(last_camera.y))
+        last_camera = player.pos;
+
+    last_camera = last_camera.lerp(player.pos.subtract(player.velocity.multiply(vec2(5, 5))), .04);
+    cameraPos = last_camera;
+
+    drawTextScreen(
+        `Time: ${Math.floor((time / 60) % 60)}:${Math.floor(time % 60).toString().padStart(2, "0")}\nHealth: ${player.health}\nKills: ${kills}`,
+        vec2(15, 30), 30, new Color, 100, new Color(0, 0, 0, 0), "left"
+    );
+
+    if (paused)
+        drawTextScreen("You Died!\nReload to try again", vec2(window.innerWidth / 2, window.innerHeight / 2 - 50), 100, new Color(1, 0, 0, 1));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

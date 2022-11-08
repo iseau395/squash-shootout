@@ -1,8 +1,7 @@
 {
-  "name": "chs-game-jam",
+  "name": "squash-shootout",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A game where you have a shootout with squashes",
   "private": true,
   "type": "module",
   "scripts": {

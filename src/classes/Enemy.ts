@@ -40,7 +40,14 @@ export class Enemy extends Entity {
         if (this.destroyed)
             return;
 
-        this.last_targets[4] = this.last_targets.shift().lerp(player.pos.add(randVector(.5)), .09);
+        const pos_diff = player.pos.subtract(this.pos);
+
+        this.last_targets[4] = this.last_targets.shift().lerp(
+            player.pos.add(randVector(1).multiply(
+                vec2(max(min(pos_diff.x / 10, 2), .5), max(min(pos_diff.y / 10, 2), .5))
+            )),
+            .09
+        );
 
         this.weapon.setTarget(this.last_targets[4]);
 
